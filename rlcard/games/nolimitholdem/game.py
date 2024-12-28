@@ -181,6 +181,8 @@ class NolimitholdemGame(Game):
                     self.round_counter += 1
 
             self.round_counter += 1
+            if self.num_players == 2 and self.round_counter >= 1:
+                self.game_pointer = (self.game_pointer + 1) % self.num_players
             self.round.start_new_round(self.game_pointer)
 
         state = self.get_state(self.game_pointer)
@@ -247,6 +249,7 @@ class NolimitholdemGame(Game):
         Return the number of applicable actions
 
         Returns:
-            (int): The number of actions. There are 6 actions (call, raise_half_pot, raise_pot, all_in, check and fold)
+            (int): The number of actions. There are 10 actions (call, raise_half_pot, raise_onethird_pot, 
+            raise_threefourth_pot, raise_oneandhalf_pot, raise_two_pot, raise_three_pot, raise_pot, all_in, check and fold)
         """
         return len(Action)
