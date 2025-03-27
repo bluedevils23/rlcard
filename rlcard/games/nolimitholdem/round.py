@@ -8,18 +8,14 @@ from rlcard.games.limitholdem import PlayerStatus
 class Action(Enum):
     FOLD = 0
     CHECK_CALL = 1
+    #CALL = 2
+    # RAISE_3BB = 3
     RAISE_HALF_POT = 2
     RAISE_POT = 3
+    # RAISE_2POT = 5
     ALL_IN = 4
     # SMALL_BLIND = 7
     # BIG_BLIND = 8
-
-    # Newly added by Yang
-    RAISE_ONETHIRD_POT = 5
-    RAISE_THREEFOURTH_POT = 6
-    RAISE_ONEANDHALF_POT = 7
-    RAISE_TWO_POT = 8
-    RAISE_THREE_POT = 9
 
 
 class NolimitholdemRound:
@@ -104,36 +100,6 @@ class NolimitholdemRound:
             player.bet(chips=quantity)
             self.not_raise_num = 1
 
-        elif action == Action.RAISE_ONETHIRD_POT:
-            quantity = int(self.dealer.pot / 3)
-            self.raised[self.game_pointer] += quantity
-            player.bet(chips=quantity)
-            self.not_raise_num = 1
-
-        elif action == Action.RAISE_THREEFOURTH_POT:
-            quantity = int(self.dealer.pot * 3 / 4)
-            self.raised[self.game_pointer] += quantity
-            player.bet(chips=quantity)
-            self.not_raise_num = 1
-
-        elif action == Action.RAISE_ONEANDHALF_POT:
-            quantity = int(self.dealer.pot * 3 / 2)
-            self.raised[self.game_pointer] += quantity
-            player.bet(chips=quantity)
-            self.not_raise_num = 1
-
-        elif action == Action.RAISE_TWO_POT:
-            quantity = int(self.dealer.pot * 2)
-            self.raised[self.game_pointer] += quantity
-            player.bet(chips=quantity)
-            self.not_raise_num = 1
-
-        elif action == Action.RAISE_THREE_POT:
-            quantity = int(self.dealer.pot * 3)
-            self.raised[self.game_pointer] += quantity
-            player.bet(chips=quantity)
-            self.not_raise_num = 1
-
         elif action == Action.FOLD:
             player.status = PlayerStatus.FOLDED
 
@@ -178,11 +144,6 @@ class NolimitholdemRound:
         if diff > 0 and diff >= player.remained_chips:
             full_actions.remove(Action.RAISE_HALF_POT)
             full_actions.remove(Action.RAISE_POT)
-            full_actions.remove(Action.RAISE_ONETHIRD_POT)
-            full_actions.remove(Action.RAISE_THREEFOURTH_POT)
-            full_actions.remove(Action.RAISE_ONEANDHALF_POT)
-            full_actions.remove(Action.RAISE_TWO_POT)
-            full_actions.remove(Action.RAISE_THREE_POT)
             full_actions.remove(Action.ALL_IN)
         # Even if we can raise, we have to check remained chips
         else:
@@ -192,46 +153,11 @@ class NolimitholdemRound:
             if int(self.dealer.pot / 2) > player.remained_chips:
                 full_actions.remove(Action.RAISE_HALF_POT)
 
-            if int(self.dealer.pot / 3) > player.remained_chips:
-                full_actions.remove(Action.RAISE_ONETHIRD_POT)
-
-            if int(self.dealer.pot * 3 / 4) > player.remained_chips:
-                full_actions.remove(Action.RAISE_THREEFOURTH_POT)
-
-            if int(self.dealer.pot * 3 / 2) > player.remained_chips:
-                full_actions.remove(Action.RAISE_ONEANDHALF_POT)
-
-            if int(self.dealer.pot * 2) > player.remained_chips:
-                full_actions.remove(Action.RAISE_TWO_POT)
-
-            if int(self.dealer.pot * 3) > player.remained_chips:
-                full_actions.remove(Action.RAISE_THREE_POT)
-
             # Can't raise if the total raise amount is leq than the max raise amount of this round
             # If raise by pot, there is no such concern
             if Action.RAISE_HALF_POT in full_actions and \
                 int(self.dealer.pot / 2) + self.raised[self.game_pointer] <= max(self.raised):
                 full_actions.remove(Action.RAISE_HALF_POT)
-
-            if Action.RAISE_ONETHIRD_POT in full_actions and \
-                int(self.dealer.pot / 3) + self.raised[self.game_pointer] <= max(self.raised):
-                full_actions.remove(Action.RAISE_ONETHIRD_POT)
-
-            if Action.RAISE_THREEFOURTH_POT in full_actions and \
-                int(self.dealer.pot * 3 / 4) + self.raised[self.game_pointer] <= max(self.raised):
-                full_actions.remove(Action.RAISE_THREEFOURTH_POT)
-
-            if Action.RAISE_ONEANDHALF_POT in full_actions and \
-                int(self.dealer.pot * 3 / 2) + self.raised[self.game_pointer] <= max(self.raised):
-                full_actions.remove(Action.RAISE_ONEANDHALF_POT)
-
-            if Action.RAISE_TWO_POT in full_actions and \
-                int(self.dealer.pot * 2) + self.raised[self.game_pointer] <= max(self.raised):
-                full_actions.remove(Action.RAISE_TWO_POT)
-
-            if Action.RAISE_THREE_POT in full_actions and \
-                int(self.dealer.pot * 3) + self.raised[self.game_pointer] <= max(self.raised):
-                full_actions.remove(Action.RAISE_THREE_POT)
 
         return full_actions
 
